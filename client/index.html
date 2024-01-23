@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IngChat</title>
+    <script type="module">
+        import { io } from 'https://cdn.socket.io/4.3.2/socket.io.esm.min.js'
+        const socket = io()
+        const form = document.getElementById('form')
+        const input = document.getElementById('input')
+        const mensajes = document.getElementById('mensajes')
+
+
+        socket.on('mensaje del chat', (msg) => {
+            const item = `<li style="color: ${msg.color};"><strong>${msg.username}:</strong> ${msg.mensaje}</li>`;
+            mensajes.insertAdjacentHTML('beforeend', item);
+        });
+
+        // Función para obtener un color aleatorio
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const usernameInput = document.getElementById('username');
+            const mensajeInput = document.getElementById('input');
+
+            if (usernameInput.value && mensajeInput.value) {
+                const mensajeData = {
+                    username: usernameInput.value,
+                    mensaje: mensajeInput.value,
+                    color: getRandomColor()
+                };
+                socket.emit('mensaje del chat', mensajeData);
+                mensajeInput.value = '';
+            }
+        });
+
+    </script>
+    <style>
+        :root {
+            --primary-color: #075e54;
+            --secondary-color: #128c7e;
+            --background-color: #f0f0f0;
+            --chat-background: #fff;
+            --message-background: #dcf8c6;
+            --message-text-color: #000;
+            --form-background: #f5f5f5;
+            --form-border: #ddd;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--secondary-color);
+        }
+
+        #header {
+            background-color: var(--form-border);
+            color: #000000;
+            padding: 1px;
+
+            margin-top: 100px;
+            border-radius: 3px;
+            text-align: center;
+            font-size: 18px;
+            width: 548px;
+            max-width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #chat {
+
+            border: px solid var(--form-border);
+            border-radius: 3px;
+            overflow: hidden;
+            width: 550px;
+            max-width: 100%;
+            background-color: var(--chat-background);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 0px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #mensajes {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow-y: auto;
+            max-height: 400px;
+            padding: 10px;
+            flex-grow: 1;
+        }
+
+        #mensajes>li {
+            padding: 10px;
+            border-bottom: 1px solid var(--form-border);
+            color: var(--message-text-color);
+        }
+
+
+
+        #form {
+            display: flex;
+            align-items: center;
+            background-color: var(--form-background);
+            border-top: 8px solid var(--form-border);
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+            padding: 13px;
+            border-radius: 5px;
+            /* Añadido para esquinas redondeadas */
+            margin-top: 10px;
+            /* Ajusta según sea necesario */
+        }
+
+        #username {
+            flex: 1;
+            border: none;
+            padding: 9px;
+            border-radius: 20px;
+            margin-right: 20px;
+            outline: none;
+            font-size: 12px;
+        }
+
+        #input {
+            flex: 1;
+            border: none;
+            padding: 9px;
+            border-radius: 20px;
+            margin-right: 10px;
+            outline: none;
+            font-size: 12px;
+        }
+
+        #form>button {
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        #form>button:hover {
+            background: var(--secondary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <h1>ChatWeb</h1>
+    </div>
+    <section id="chat">
+        <ul id="mensajes"></ul>
+        <form id="form">
+            <input type="text" name="username" id="username" placeholder="Nombre de usuario" autocomplete="off"
+                required />
+            <input type="text" name="mensaje" id="input" placeholder="Escribe un mensaje" autocomplete="off" />
+            <button type="submit">Enviar</button>
+        </form>
+    </section>
+
+</body>
+
+</html>
